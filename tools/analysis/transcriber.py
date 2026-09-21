@@ -8,6 +8,7 @@ are not available.
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any, Optional
@@ -38,6 +39,8 @@ class Transcriber(BaseTool):
 
     dependencies = ["python:faster_whisper"]
     install_instructions = (
+        "Set DIARIZE_URL and DIARIZE_API_KEY to transcribe through a "
+        "self-hosted diarization service, or install a local engine: "
         "pip install faster-whisper  # CPU mode\n"
         "pip install faster-whisper[gpu]  # GPU mode (requires CUDA)\n"
         "pip install whisperx  # For diarization support"
@@ -95,7 +98,16 @@ class Transcriber(BaseTool):
         "Verify word timestamps align with speech",
     ]
 
+    @staticmethod
+    def _remote_config() -> Optional[tuple[str, str]]:
+        """Return (base_url, api_key) when a diarization service is configured."""
+        url = os.environ.get("DIARIZE_URL", "").strip().rstrip("/")
+        api_key = os.environ.get("DIARIZE_API_KEY", "").strip()
+        return (url, api_key) if url and api_key else None
+
     def get_status(self) -> ToolStatus:
+        if self._remote_config():
+            return ToolStatus.AVAILABLE
         try:
             import faster_whisper  # noqa: F401
             return ToolStatus.AVAILABLE
@@ -124,6 +136,10 @@ class Transcriber(BaseTool):
             return ToolResult(success=False, error=f"Input file not found: {input_path}")
 
         output_dir.mkdir(parents=True, exist_ok=True)
+
+        remote = self._remote_config()
+        if remote:
+            return self._transcribe_remote(remote, input_path, output_dir, inputs)
 
         try:
             from faster_whisper import WhisperModel
@@ -237,6 +253,109 @@ class Transcriber(BaseTool):
             data=result_data,
             artifacts=[str(output_path)],
             duration_seconds=round(elapsed, 2),
+        )
+
+    @staticmethod
+    def _map_words(utterance: dict[str, Any]) -> list[dict]:
+        """Map service words onto the faster-whisper word shape."""
+        mapped = []
+        for word in utterance.get("words") or []:
+            entry = {
+                "word": word["text"],
+                "start": round(word["start"], 3),
+                "end": round(word["end"], 3),
+            }
+            if word.get("conf") is not None:
+                entry["probability"] = word["conf"]
+            mapped.append(entry)
+        return mapped
+
+    def _transcribe_remote(
+        self,
+        remote: tuple[str, str],
+        input_path: Path,
+        output_dir: Path,
+        inputs: dict[str, Any],
+    ) -> ToolResult:
+        """Transcribe through a self-hosted diarization service.
+
+        The service returns speaker utterances with timecodes. Word-level
+        timestamps stay inside it, so `word_timestamps` comes back empty and
+        downstream cues fall back to utterance-level timing.
+        """
+        import requests
+
+        base_url, api_key = remote
+        timeout = int(os.environ.get("DIARIZE_TIMEOUT", "900"))
+        start = time.time()
+
+        try:
+            with input_path.open("rb") as handle:
+                response = requests.post(
+                    f"{base_url}/v1/diarize",
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    files={"file": (input_path.name, handle)},
+                    data={
+                        "mode": "auto",
+                        "merge_speakers": "false",
+                        "response_format": "json",
+                        "words": "true",
+                    },
+                    timeout=timeout,
+                )
+        except requests.RequestException as exc:
+            return ToolResult(
+                success=False,
+                error=f"Diarization service unreachable at {base_url}: {exc}",
+            )
+
+        if response.status_code != 200:
+            return ToolResult(
+                success=False,
+                error=(
+                    f"Diarization service returned {response.status_code}: "
+                    f"{response.text[:300]}"
+                ),
+            )
+
+        utterances = response.json().get("segments", [])
+        segments = []
+        word_timestamps: list[dict] = []
+        for index, utterance in enumerate(utterances):
+            segment = {
+                "id": index,
+                "start": round(utterance["start"], 3),
+                "end": round(utterance["end"], 3),
+                "text": utterance["text"].strip(),
+                "speaker": utterance.get("speaker"),
+            }
+            # Older service builds return utterances only; cues then fall back
+            # to utterance-level timing instead of word-level.
+            words = self._map_words(utterance)
+            if words:
+                segment["words"] = words
+                word_timestamps.extend(words)
+            segments.append(segment)
+
+        result_data = {
+            "segments": segments,
+            "word_timestamps": word_timestamps,
+            "language": inputs.get("language") or "ru",
+            "duration_seconds": segments[-1]["end"] if segments else 0.0,
+            "backend": "diarization_service",
+            "service_url": base_url,
+        }
+
+        output_path = output_dir / f"{input_path.stem}_transcript.json"
+        output_path.write_text(
+            json.dumps(result_data, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+
+        return ToolResult(
+            success=True,
+            data=result_data,
+            artifacts=[str(output_path)],
+            duration_seconds=round(time.time() - start, 2),
         )
 
     def _apply_diarization(
