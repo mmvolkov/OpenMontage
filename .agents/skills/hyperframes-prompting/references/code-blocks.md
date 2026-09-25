@@ -1,0 +1,132 @@
+# Code animations
+
+_Prompt code walkthroughs — typing, diffing, highlighting, scrolling — and pick a terminal or editor theme by name._
+
+<!-- Vendored from heygen-com/hyperframes docs/prompting/code-blocks.mdx — canonical: https://hyperframes.heygen.com/prompting/code-blocks -->
+
+Your PR video from Level 1 named `code-diff` for a single beat and moved on. This chapter is the rest of that catalog: typing, diffing, highlighting, scrolling, and picking a terminal or editor theme by name — for the moments a walkthrough needs to slow down and let the code itself carry the scene.
+
+Code is the one subject where the framework does the hard part for you. The [Code Animations](https://hyperframes.heygen.com/catalog/blocks/code-typing) blocks handle syntax highlighting, caret tracking, diff coloring, and camera moves deterministically — you describe the *walkthrough*, name the block, and paste your snippet. This page is the vocabulary for doing that well; for turning a real pull request into a code-change video, see [Code and PRs](code-and-prs.md).
+
+Everything here follows the [one-shot skeleton](anatomy.md): route, spec, beats, copy, technique, negatives. The "technique" slot is where you name the block, and the "copy" slot is where your code goes — quoted exactly, because unquoted code gets paraphrased into something that won't compile.
+
+### Pick the motion by what the viewer should learn
+
+Each Code Animations block answers a different "what is the viewer supposed to notice." Map the intent to the block:
+
+| You want to show…                          | Name this block                                         | Length |
+| ------------------------------------------ | ------------------------------------------------------- | ------ |
+| Code being written, character by character | [`code-typing`](https://hyperframes.heygen.com/catalog/blocks/code-typing)            | 5s     |
+| An edit — before → after, red/green        | [`code-diff`](https://hyperframes.heygen.com/catalog/blocks/code-diff)                | 6s     |
+| One line as *the* line, everything else dim | [`code-highlight`](https://hyperframes.heygen.com/catalog/blocks/code-highlight)      | 5s     |
+| Walking a long file to a spot deep inside  | [`code-scroll`](https://hyperframes.heygen.com/catalog/blocks/code-scroll)            | 6s     |
+| One snippet transforming into another      | [`code-morph`](https://hyperframes.heygen.com/catalog/blocks/code-morph)              | 7s     |
+| Code on a rotating 3D slab (title-card feel) | [`code-3d-extrude`](https://hyperframes.heygen.com/catalog/blocks/code-3d-extrude)    | 8s     |
+| Code resolving out of a shader dissolve    | [`code-shader-dissolve`](https://hyperframes.heygen.com/catalog/blocks/code-shader-dissolve) | 7s |
+| Code assembling from a particle swarm      | [`code-particle-assemble`](https://hyperframes.heygen.com/catalog/blocks/code-particle-assemble) | 8s |
+
+The first four are the workhorses of a code *walkthrough* — they keep the code readable and the viewer oriented. Everything below them trades legibility for motion: they look great as an opener or a hero moment, but they trade legibility for motion, so don't ask them to carry an explanation.
+
+> **Tip:**
+> `code-morph` re-drives Shiki Magic Move as a paused GSAP timeline, and `code-diff` collapses removed lines and expands added lines. Both read "an edit happened" far more clearly than retyping the whole snippet with `code-typing` — reach for them when the story is *a change*, not *authoring from scratch*.
+
+### Prompting a typing reveal
+
+`code-typing` reveals code character by character with a caret that tracks the frontier — no CSS animation, so it seeks cleanly. Give it the exact code and a pace; the agent re-bakes the block's syntax tokens to your snippet.
+
+> /motion-graphics 6-second 1920x1080 video. A dark editor types this snippet, character by character, caret tracking the frontier, then holds on the blinking cursor for the final second:
+> ```
+> export async function render(comp: Composition) {
+>   await comp.seek(0);
+>   return comp.capture();
+> }
+> ```
+> Use the `code-typing` registry block. No narration, no image or media files.
+
+[▶ HyperFrames video: Validate Code Typing](https://static.heygen.ai/hyperframes-oss/docs/images/prompting/validate-code-typing.mp4)
+*Rendered from the prompt above, unedited.*
+
+**Quote the code as a literal block.** Prose descriptions of code get paraphrased.
+- ❌ `type out a function that seeks to zero and captures`
+- ✅ paste the actual snippet in a fenced block — it renders verbatim
+
+**Give the caret somewhere to rest.** Compositions hold their final state, so if you don't ask for a hold the last frame is a frozen full snippet — the [dead-motion tell](motion.md).
+- ❌ `types the code and ends`
+- ✅ `types the code, then holds on the blinking cursor for the final second`
+
+### Prompting a diff or a highlight
+
+For "here's what changed," hand `code-diff` the before and after and let it color the delta. For "look at *this* line," give `code-highlight` the full context and name the target line.
+
+> /motion-graphics 6-second 1920x1080 video. Show this edit to `api.ts` as a colored diff — the removed line collapses in red, the added line expands in green:
+> removed: `const res = await fetch(url)`
+> added: `const res = await fetch(url, { signal })`
+> Use the `code-diff` registry block. No audio.
+
+[▶ HyperFrames video: Validate Code Diff](https://static.heygen.ai/hyperframes-oss/docs/images/prompting/validate-code-diff.mp4)
+*Rendered from the prompt above, unedited.*
+
+> /motion-graphics 5-second 1920x1080 video. Show a 12-line config file; a highlight band sweeps to line 7 (`timeout: 30_000`) while the surrounding lines dim. Hold with line 7 lit and the cursor blinking. Use the `code-highlight` registry block. No audio.
+
+[▶ HyperFrames video: Validate Code Highlight](https://static.heygen.ai/hyperframes-oss/docs/images/prompting/validate-code-highlight.mp4)
+*Rendered from the prompt above, unedited — the agent authors plausible surrounding config lines; paste all 12 if the exact file matters.*
+
+**Name the target line unambiguously.** The block dims context around one line — tell it which.
+- ❌ `highlight the important line`
+- ✅ `highlight line 7 (timeout: 30_000)`
+
+### Prompting a scroll-through
+
+`code-scroll` moves the camera down a long file to bring a target line to center and spotlights it — the block for walking real modules, not toy snippets.
+
+> /motion-graphics 6-second 1920x1080 video. Scroll a ~60-line source file so line 44 (`return dedupeFrames(frames)`) arrives at center and gets spotlighted; ease the scroll and let it settle without snapping. Use the `code-scroll` registry block. No audio.
+
+[▶ HyperFrames video: Code Scroll](https://static.heygen.ai/hyperframes-oss/docs/images/prompting/code-scroll.mp4)
+*Rendered from the prompt above, unedited.*
+
+**Ask the scroll to ease and settle, not snap.** A linear scroll that stops dead reads mechanical.
+- ❌ `scroll straight to the line`
+- ✅ `ease the scroll and let it settle` — pair with the [motion grammar](motion.md)
+
+### Choosing a theme by name
+
+| Profile      | Block                                     | Profile        | Block                                       |
+| ------------ | ----------------------------------------- | -------------- | ------------------------------------------- |
+
+**VS Code workbench themes** — full editor chrome (activity bar, sidebar, tabs, terminal, status bar). Say "monokai" or "visual studio dark":
+
+| Say this               | Block                                 | Say this            | Block                              |
+| ---------------------- | ------------------------------------- | ------------------- | ---------------------------------- |
+
+[▶ HyperFrames video: Terminal Ocean](https://static.heygen.ai/hyperframes-oss/docs/images/prompting/terminal-ocean.mp4)
+*Rendered from the prompt above, unedited.*
+
+**Match the theme to the surface you're claiming to show.** A terminal command in a VS Code editor chrome reads wrong; a source file in Terminal.app reads wrong.
+- ❌ `monokai theme typing a shell command`
+- ✅ `apple terminal homebrew profile typing a shell command`
+
+> **Tip:**
+> Ambiguity resolves to the closest named block. "Dark theme" is under-specified — the agent picks one of a dozen dark variants and you may not get the one you pictured. Say the theme name. This is the [specification dial](specification-dial.md) applied to code: name the block when the default choice can miss.
+
+### Pairing with a pull request
+
+When the code you're animating comes from a real PR, don't hand-write the beats — the [`/pr-to-video`](code-and-prs.md) workflow reads the diff and composes `code-diff`, `code-highlight`, and `code-scroll` around the actual changed hunks. Use the blocks on this page directly when you're illustrating a concept; route through the PR workflow when you're narrating a specific change set.
+
+### Where to go next
+
+- [Anatomy of a one-shot prompt](anatomy.md) — the skeleton every prompt above uses.
+- [Copy-paste examples](examples.md) — full prompts you can adapt.
+- [Code and PRs](code-and-prs.md) — turning a GitHub PR into a code-change video.
+- [Motion that reads premium](motion.md) — the hold-and-settle rules the code blocks still need from you.
+
+> **Note:**
+> **Capstone thread** — the [Level 7 film](capstone.md) opens with this chapter's technique: real HyperFrames markup typed character by character, and the typed line's baseline literally grows into the timeline wire the rest of the film travels (cut from the film, below).
+
+This is the clause in the [full capstone prompt](capstone.md#the-prompt-word-for-word) that buys the piece — prompt language you can lift for your own video:
+
+> **Type (0–7s).** Black-on-charcoal close-up: a cursor types real HyperFrames markup character by character — `` and a `gsap.timeline({ paused: true })` line. As the typed line completes, the text's baseline extends and becomes **the wire** — the underline literally grows into the timeline and the camera begins its dolly along it. The typed div folds into a compact clip chip (persistent element 3) that drops onto the wire. Kinetic display type states "WRITE HTML." as the travel begins.
+
+[▶ HyperFrames video: Capstone Region Type](https://static.heygen.ai/hyperframes-oss/docs/images/prompting/capstone-region-type.mp4)
+*That clause, rendered — the region cut from the finished film.*
+
+*Next: [Data and maps](data-and-maps.md) — the same named-block, quoted-copy pattern, for charts, stats, and maps instead of code.*

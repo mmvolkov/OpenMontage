@@ -80,7 +80,7 @@ Each tool's `agent_skills[]` field bridges Layer 1 → Layer 3. See `skills/INDE
 | `tools/character/character_animation.py` | Local character-animation tools — character specs, SVG rig plans, pose libraries, action timelines, HyperFrames packages, and QA reports |
 | `lib/hyperframes_style_bridge.py` | Playbook → CSS custom properties + `DESIGN.md` bridge for HyperFrames workspaces |
 | `remotion-composer/src/components/` | 8 Remotion components (TextCard, StatCard, ProgressBar, CalloutBox, ComparisonCard + charts/) |
-| `.agents/skills/hyperframes*/` | Vendored HyperFrames Layer 3 skills (authoring contract, CLI, registry, website-to-video) |
+| `.agents/skills/hyperframes*/` + workflow skills | Vendored HyperFrames Layer 3 skills at v0.8.77 (router, authoring contract, animation/keyframes, creative, audio, CLI, registry, studio, Prompt Guide) plus the workflow skills (`general-video`, `product-launch-video`, `faceless-explainer`, `pr-to-video`, `motion-graphics`, `music-to-video`, `embedded-captions`, `talking-head-recut`, `slideshow`, `remotion-to-hyperframes`, `figma`, `media-use`). See `.agents/skills/hyperframes/PROVENANCE.md`. |
 | `.agents/skills/threejs-world-generation/` | Layer 3 coarse-to-fine semantic world construction and render-guided refinement workflow |
 | `skills/core/hyperframes.md` | Layer 2 — when OpenMontage should pick HyperFrames vs Remotion, artifact → workspace mapping |
 | `schemas/styles/playbook.schema.json` | Playbook schema v2 with design tokens (chart_palette, scale_system, weight_matrix, color_rules) |
