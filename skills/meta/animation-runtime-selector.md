@@ -60,7 +60,8 @@ when both were available is a CRITICAL reviewer finding.
 | Word-level caption burn / karaoke captions | **remotion** | `skills/core/remotion.md` |
 | Avatar / lip-sync / presenter | **remotion** | `skills/core/remotion.md` |
 | Kinetic typography, HTML/GSAP-native motion, product promo, launch reel | **hyperframes** | `skills/core/hyperframes.md` + `.agents/skills/hyperframes/SKILL.md` (router) → `hyperframes-core` (contract), `hyperframes-creative` (palette/type), `hyperframes-animation` (motion) |
-| Website → video, UI-driven composition | **hyperframes** | `.agents/skills/website-to-video/SKILL.md` (renamed from website-to-hyperframes in 0.7) |
+| Website → video, product launch / promo, UI-driven composition | **hyperframes** | `.agents/skills/product-launch-video/SKILL.md` (absorbed `website-to-video` in 0.8); anything freeform → `.agents/skills/general-video/SKILL.md` |
+| Writing the brief / per-beat spec / sub-agent dispatch for a HyperFrames build | **hyperframes** | `.agents/skills/hyperframes-prompting/SKILL.md` — six-part skeleton, beat formula, vocabulary → settings, premium-motion rules |
 | Registry block needed (data-chart, grain-overlay, shader transitions, etc.) | **hyperframes** | `.agents/skills/hyperframes-registry/SKILL.md` |
 | Editable browser-native 3D terrain/world and free-viewpoint fly-through | **hyperframes** | `skills/creative/3d-world-generation.md` + `.agents/skills/threejs-world-generation/SKILL.md` |
 | Reference-grade 3D world film rendered in Blender | **ffmpeg packaging of Blender frames** | `skills/creative/3d-world-generation.md` + `.agents/skills/3d-asset-generation/SKILL.md` |
@@ -99,7 +100,9 @@ decision matrix and the list of features that stay Remotion-only in Phase 1.
 | Explicit Three.js world (terrain, regions, landmarks, camera path) | HyperFrames + `threejs_world` | `.agents/skills/threejs-world-generation` |
 | Detailed Blender world film (generated/catalog meshes, PBR, camera path) | Blender + FFmpeg packaging | `.agents/skills/3d-asset-generation` |
 | HyperFrames creative direction (palette, type, narration, beat planning) | HyperFrames | `.agents/skills/hyperframes-creative` |
-| HyperFrames audio/media (TTS, BGM, SFX, transcription, captions, bg-removal) | HyperFrames | `.agents/skills/hyperframes-media` |
+| HyperFrames media (TTS, BGM, SFX, images, icons, transcription, captions, bg-removal, grades) | HyperFrames | `.agents/skills/media-use` (absorbed `hyperframes-media` in 0.8) |
+| HyperFrames audio mixing on placed tracks (fades, ducking, automation, effect chains, submix bus) | HyperFrames | `.agents/skills/hyperframes-audio` |
+| Seek-safe keyframes (punch-in, zoom, reframe, Ken Burns, camera move, FLIP, SVG draw/morph) | HyperFrames | `.agents/skills/hyperframes-keyframes` |
 | HyperFrames composition CLI work (lint/validate/inspect/snapshot/benchmark/render/lambda) | HyperFrames CLI 0.7+ | `.agents/skills/hyperframes-cli` |
 | HyperFrames registry block install (`hyperframes add ...`) | HyperFrames registry | `.agents/skills/hyperframes-registry` |
 

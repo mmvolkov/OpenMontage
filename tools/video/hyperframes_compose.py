@@ -71,9 +71,11 @@ class HyperFramesCompose(BaseTool):
     )
     agent_skills = [
         "hyperframes",
+        "hyperframes-core",
         "hyperframes-cli",
         "hyperframes-registry",
-        "website-to-video",
+        "hyperframes-animation",
+        "hyperframes-prompting",
         "gsap-core",
         "gsap-timeline",
     ]
@@ -434,7 +436,7 @@ class HyperFramesCompose(BaseTool):
                 "install_instructions": self.install_instructions,
                 "unlocks": (
                     "HTML/CSS/GSAP composition runtime — kinetic typography, "
-                    "product promos, registry blocks, website-to-video."
+                    "product promos, registry blocks, website/product-launch video."
                 ),
             }
         return info

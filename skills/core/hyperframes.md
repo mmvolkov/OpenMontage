@@ -6,21 +6,38 @@ artifacts map to HyperFrames project files, and how the compose stage drives
 the HyperFrames CLI.
 
 For raw HyperFrames knowledge (authoring contract, `data-*` attributes, GSAP
-timeline rules, CLI flags, registry blocks, website-to-video), read the Layer 3
+timeline rules, CLI flags, registry blocks, workflow skills), read the Layer 3
 skills:
 
-- `.agents/skills/hyperframes/` — router into the focused skills below (HF 0.7+ split the monolithic skill)
-- `.agents/skills/hyperframes-core/` — composition contract: `data-*` timing, tracks, sub-compositions, deterministic-render rules
-- `.agents/skills/hyperframes-creative/` — non-animation creative direction: palette, type, narration, beat planning
-- `.agents/skills/hyperframes-media/` — TTS/BGM/SFX/transcription/captions/background-removal
-- `.agents/skills/hyperframes-animation/` — all motion knowledge (rules, blueprints, transitions, runtime adapters)
-- `.agents/skills/hyperframes-cli/` — init, add, lint, validate, inspect, snapshot, preview, render, benchmark, lambda, doctor (0.7+)
-- `.agents/skills/hyperframes-registry/` — `hyperframes add` + block wiring
-- `.agents/skills/website-to-video/` — capture-to-video workflow (renamed from website-to-video in 0.7)
-- `.agents/skills/music-to-video/` — beat-synced music-driven video using `hyperframes beats`
+Vendored at upstream `v0.8.77` (2026-09-25) — see `.agents/skills/hyperframes/PROVENANCE.md`.
+
+Core domain skills:
+
+- `.agents/skills/hyperframes/` — entry point / router: resumes project state, runs the intent interview, routes to the owning workflow, maps domain skills
+- `.agents/skills/hyperframes-core/` — composition contract: `data-*` timing, `class="clip"`, tracks, sub-compositions, variables, deterministic-render rules, creator editing recipes
+- `.agents/skills/hyperframes-animation/` — all motion knowledge (rules, blueprints, transitions, techniques, seven runtime adapters)
+- `.agents/skills/hyperframes-keyframes/` — seek-safe keyframes: punch-in/out, zoom, reframe, Ken Burns, camera moves, FLIP, paths, masks, SVG draw/morph, 3D depth
+- `.agents/skills/hyperframes-creative/` — non-animation creative direction: design spec, palette, type, narration, beat planning
+- `.agents/skills/media-use/` — the single media skill: BGM/SFX/image/icon/logo/voice/grade/LUT resolution + the shared audio engine (TTS, transcription, captions, background removal). Replaces the former `hyperframes-media`.
+- `.agents/skills/hyperframes-audio/` — mixing audio already placed in a composition: fades, gain, automation, ducking/voiceover carve, effect chains, submix buses
+- `.agents/skills/hyperframes-cli/` — init, add, lint, check, validate, inspect, snapshot, preview, render, publish, lambda, doctor, timeline, upgrade
+- `.agents/skills/hyperframes-registry/` — search the catalog BEFORE hand-building a named look; `hyperframes add` + block wiring
+- `.agents/skills/hyperframes-studio/` — timeline layout conventions for projects opened in HyperFrames Studio
+- `.agents/skills/hyperframes-prompting/` — the official Prompt Guide (six-part prompt skeleton, beat formula, vocabulary → settings, premium-motion rules, rules & anti-patterns) plus the upstream-route → OpenMontage-pipeline map
+
+Workflow skills (read inside the compose / atelier stage once `render_runtime: "hyperframes"` is locked — never as a replacement for the pipeline):
+
+- `.agents/skills/general-video/` — general authoring workflow: multi-scene pieces, reels, montages, remixes, companion mode; the fallback when nothing else fits
+- `.agents/skills/product-launch-video/` — URL / script / brief → launch or promo video, or a site tour (absorbed the former `website-to-video`)
+- `.agents/skills/faceless-explainer/` — text → faceless explainer with invented visuals
+- `.agents/skills/pr-to-video/` — GitHub PR → code-change explainer
 - `.agents/skills/motion-graphics/` — short design-led motion graphic patterns
-- `.agents/skills/media-use/` — `resolve` verb for BGM/SFX/image/icon (any pipeline, any runtime)
+- `.agents/skills/music-to-video/` — beat-synced music-driven video using `hyperframes beats`
+- `.agents/skills/embedded-captions/` — existing talking-head footage → captions (35-style catalog, local transcription + matting)
+- `.agents/skills/talking-head-recut/` — existing talking-head footage → transcript-synced graphic overlays
+- `.agents/skills/slideshow/` — navigable presentation deck (not a rendered MP4; confirm with the user first)
 - `.agents/skills/remotion-to-hyperframes/` — migration ONLY when user explicitly asks to port a Remotion source
+- `.agents/skills/figma/` — Figma file / frame / URL → assets, brand tokens, reconstructed motion
 
 This file teaches the bridge between the two.
 
@@ -48,7 +65,7 @@ logged in `decision_log`. Silent runtime swaps are a contract violation.
 | Avatar / lip-sync presenter | **Remotion** | `TalkingHead` composition lives in Remotion. No HyperFrames equivalent yet. |
 | Kinetic typography, heavy text motion, GSAP-native animation | **HyperFrames** | HTML/GSAP is the natural medium. Expressing this as Remotion `interpolate()` calls is slow and fragile. |
 | Product promo / launch reel / marketing title card | **HyperFrames** | CSS/GSAP composition grammar matches how designers already think about these. Templates (`kinetic-type`, `product-promo`, `swiss-grid`) give a strong starting point. |
-| Website-to-video / UI-driven composition | **HyperFrames** | The `website-to-video` workflow exists for exactly this. |
+| Website / product-launch video, UI-driven composition | **HyperFrames** | The `product-launch-video` workflow (which absorbed `website-to-video`) exists for exactly this. |
 | Registry block needed (data chart, grain overlay, shimmer sweep, shader transition) | **HyperFrames** | The registry is HyperFrames-only. Remotion does not have `hyperframes add`. |
 | Synthetic UI / fake terminal / fake browser demo | Either — depends on existing coverage | OpenMontage already ships Remotion `TerminalScene` (see `synthetic-screen-recording` Layer 3). For UI chrome beyond terminal, HyperFrames HTML is easier. |
 | Pure concat / trim of source clips, no composition | **FFmpeg** | Neither Remotion nor HyperFrames add value here. |
@@ -138,7 +155,7 @@ gitignored with the rest of the production workspace.
 - `npx hyperframes lint | validate | render` all operate on a project
   directory. They don't take an abstract composition ID the way Remotion does.
 - Assets live next to the HTML that references them, matching the
-  `website-to-video` reference workflow.
+  upstream workflow skills (`product-launch-video`, `general-video`).
 
 ---
 
@@ -165,7 +182,7 @@ with the path to the generated MP4. See `tools/video/hyperframes_compose.py`.
 
 ### Workspace-local authoring artifacts
 
-Upstream's `website-to-video` skill uses `DESIGN.md`, `SCRIPT.md`, and
+Upstream's workflow skills use `BRIEF.md`, `DESIGN.md`, `SCRIPT.md`, and
 `STORYBOARD.md` as step-by-step workspace files. OpenMontage does **not**
 replace its canonical artifact contracts with these — `brief`, `script`,
 `scene_plan`, `edit_decisions`, etc. remain the source of truth under

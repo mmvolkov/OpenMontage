@@ -678,6 +678,7 @@ The `.agents/skills/` directory is large. When you're not coming in through a to
 | Category | Skills |
 |---|---|
 | **Composition runtime** | `remotion`, `remotion-best-practices`, `synthetic-screen-recording` (fake terminal/UI demos via Remotion TerminalScene), `threejs-world-generation` (semantic terrain and free-viewpoint HyperFrames worlds) |
+| **HyperFrames (HTML/GSAP runtime)** | `hyperframes` (router) → `hyperframes-core`, `hyperframes-animation`, `hyperframes-keyframes`, `hyperframes-creative`, `hyperframes-audio`, `hyperframes-cli`, `hyperframes-registry`, `hyperframes-studio`, `media-use`; `hyperframes-prompting` (the official Prompt Guide: prompt skeleton, vocabulary, motion rules, anti-patterns); workflows `general-video`, `product-launch-video`, `faceless-explainer`, `pr-to-video`, `motion-graphics`, `music-to-video`, `embedded-captions`, `talking-head-recut`, `slideshow`, `remotion-to-hyperframes`, `figma`. Layer 2 bridge: `skills/core/hyperframes.md` |
 | **Animation knowledge (generic)** | `gsap-core`, `gsap-timeline`, `gsap-plugins` (SplitText / MorphSVG / DrawSVG / MotionPath / Flip / CustomEase), `gsap-utils`, `gsap-react`, `gsap-performance`, `gsap-scrolltrigger`, `gsap-frameworks`, `framer-motion` (Disney 12 principles), `lottie-bodymovin` (Lottie export) |
 | **Character animation** | `character-rigging`, `svg-character-animation`, `pose-library-design`, `canvas-procedural-animation`, `character-animation-qa` |
 | **Image generation** | `bfl-api`, `flux-best-practices` |
